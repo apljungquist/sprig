@@ -1,0 +1,21 @@
+os: linux
+sudo: false
+language: python
+matrix:
+  include:
+  - python: 3.6
+    env: TOXENV=py36,cov-codecov,linting,formatting,typing
+  - python: 3.5
+    env: TOXENV=py35,cov-codecov
+  - python: pypy3
+    env: TOXENV=pypy3,cov-codecov
+  fast_finish: true
+install:
+- pip install tox
+script:
+- tox
+cache:
+- pip
+branches:
+  only:
+  - master
