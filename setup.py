@@ -8,7 +8,8 @@ with open(readme_path, 'r') as fp:
 
 setuptools.setup(
     name="sprig",
-    version="0.0.0",
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
     author="AP Ljungquist",
     author_email="ap@ljungquist.eu",
     description="A home to code that would otherwise be homeless",
