@@ -1,0 +1,23 @@
+environment:
+  matrix:
+
+    - PYTHON: C:\Python36-x64
+      TOXENV: py36,cov-codecov
+
+init:
+  - SET PATH=%PYTHON%;%PATH%
+
+install:
+  - python -m pip install -U tox
+
+build: off
+
+test_script:
+  - python -m tox
+
+branches:
+  only:
+    - master
+
+cache:
+  - '%LOCALAPPDATA%\pip\Cache'
