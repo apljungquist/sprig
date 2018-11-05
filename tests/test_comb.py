@@ -10,6 +10,7 @@ parameters = [
     ([0], 0),  # 0-combinations, small collection
     ([0], 1),  # n-combinations, small collection
     ([0], 2),  # n+1 combinations, small collection
+    ([0, 1], 1),  # Length will be exactly 2
     ([0, 1, 2, 3, 4, 5], 0),  # 0-combinations
     ([0, 1, 2, 3, 4, 5], 1),  # 1-combinations
     ([0, 1, 2, 3, 4, 5], 3),  # k-combinations
@@ -56,3 +57,8 @@ def test_agrees_with_itertools(s, k):
             functools.partial(actual.__getitem__, i),
             functools.partial(expected.__getitem__, i),
         )
+
+
+@pytest.mark.parametrize('s, k', parameters)
+def test_str_does_not_raise(s, k):
+    str(comb.Combinations(s, k))

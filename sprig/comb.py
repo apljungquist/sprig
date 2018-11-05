@@ -42,12 +42,16 @@ class Combinations:
         return self._len
 
     def __str__(self):
-        if self._len > 2:
-            return f"Combinations({self._n}, {self._k}) = ({self[0]}, ..., {self[-1]})"
-        if self._len > 1:
+        if self._len == 0:
+            return f"Combinations({self._n}, {self._k}) = ()"
+
+        if self._len == 1:
+            return f"Combinations({self._n}, {self._k}) = ({self[0]})"
+
+        if self._len == 2:
             return f"Combinations({self._n}, {self._k}) = ({self[0]}, {self[-1]})"
 
-        return f"Combinations({self._n}, {self._k}) = ({self[0]})"
+        return f"Combinations({self._n}, {self._k}) = ({self[0]}, ..., {self[-1]})"
 
     def __iter__(self):
         yield from itertools.combinations(self._s, self._k)
