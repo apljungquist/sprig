@@ -1,0 +1,11 @@
+# A summary of all packages needed to manage the project, excluding packages
+# that are not used directly.
+pip-tools
+tox
+
+# The following packages are often considered to be unsafe in a requirements
+# file. However
+# * I cannot seem to find a good reference for why this would be the case, and
+# * I have experienced builds breaking because new versions were released.
+pip
+setuptools
