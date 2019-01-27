@@ -12,7 +12,7 @@ env:
 
 matrix:
   include:
-  - env: TOXENV=linting,formatting,typing
+  - env: TOXENV=linting,formatting,typing,docs-html
   allow_failures:
   - env: TOXENV=x-latest
   fast_finish: true
