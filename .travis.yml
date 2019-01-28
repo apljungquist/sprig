@@ -2,23 +2,21 @@ os: linux
 sudo: false
 language: python
 python:
-  - '3.6'
   - '3.5'
+  - '3.6'
   - 'pypy3'
 env:
   - TOXENV=x-latest
   - TOXENV=x-stable,x-cov,cov-codecov
 matrix:
   include:
-  - python: '3.7'
-    dist: xenial
-    sudo: true
-    env: TOXENV=x-stable,x-cov,cov-codecov,linting,formatting,typing
+  - python: '3.6'
+    env: TOXENV=linting,formatting,typing
   allow_failures:
   - env: TOXENV=x-latest
   fast_finish: true
 install:
-- pip install tox
+- pip install -c requirements.txt tox
 script:
 - tox
 cache:
