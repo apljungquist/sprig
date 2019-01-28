@@ -5,3 +5,4 @@
 [![Appveyor](https://ci.appveyor.com/api/projects/status/w1aassqbg3250165?svg=true)](https://ci.appveyor.com/project/apljungquist/sprig)
 [![Travis](https://travis-ci.com/apljungquist/sprig.svg?branch=master)](https://travis-ci.com/apljungquist/sprig)
 [![codecov](https://codecov.io/gh/apljungquist/sprig/branch/master/graph/badge.svg)](https://codecov.io/gh/apljungquist/sprig)
+[![ReadTheDocs](https://readthedocs.org/projects/sprig/badge/?version=stable)](https://sprig.readthedocs.io/en/stable/?badge=stable)
