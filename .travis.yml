@@ -15,7 +15,7 @@ matrix:
     env: TOXENV=pypy3,cov-codecov
   fast_finish: true
 install:
-- pip install tox
+- pip install -c requirements.txt tox
 script:
 - tox
 cache:
