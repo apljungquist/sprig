@@ -6,11 +6,24 @@ matrix:
   - python: '3.7'
     dist: xenial
     sudo: true
-    env: TOXENV=py37,cov-codecov
+    env: TOXENV=py37-stable,py37-cov,cov-codecov,linting,formatting,typing
   - python: '3.6'
-    env: TOXENV=py36,cov-codecov,linting,formatting,typing
+    env: TOXENV=py36-stable,py36-cov,cov-codecov
+  - python: '3.5'
+    env: TOXENV=py35-stable,py35-cov,cov-codecov
   - python: pypy3
-    env: TOXENV=pypy3,cov-codecov
+    env: TOXENV=pypy3-stable,pypy3-cov,cov-codecov
+  allow_failures:
+  - python: '3.7'
+    dist: xenial
+    sudo: true
+    env: TOXENV=py37-latest
+  - python: '3.6'
+    env: TOXENV=py36-latest
+  - python: '3.5'
+    env: TOXENV=py35-latest
+  - python: pypy3
+    env: TOXENV=pypy3-latest
   fast_finish: true
 install:
 - pip install tox
