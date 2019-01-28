@@ -26,5 +26,5 @@ none:
 
 # TODO: Incremental build probably fails if a preq is removed
 requirements.txt: $(wildcard requirements-*.in)
-	pip-compile --allow-unsafe --generate-hashes --output-file $@ $^ \
+	pip-compile --allow-unsafe --generate-hashes --no-header --output-file $@ $^ \
 	> /dev/null 2>&1

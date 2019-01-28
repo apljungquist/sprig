@@ -42,15 +42,21 @@ class Combinations:
 
     def __str__(self):
         if self._len == 0:
-            return f"Combinations({self._n}, {self._k}) = ()"
+            return "Combinations({n}, {k}) = ()".format(n=self._n, k=self._k)
 
         if self._len == 1:
-            return f"Combinations({self._n}, {self._k}) = ({self[0]})"
+            return "Combinations({n}, {k}) = ({first})".format(
+                n=self._n, k=self._k, first=self[0]
+            )
 
         if self._len == 2:
-            return f"Combinations({self._n}, {self._k}) = ({self[0]}, {self[-1]})"
+            return "Combinations({n}, {k}) = ({first}, {last})".format(
+                n=self._n, k=self._k, first=self[0], last=self[-1]
+            )
 
-        return f"Combinations({self._n}, {self._k}) = ({self[0]}, ..., {self[-1]})"
+        return "Combinations({n}, {k}) = ({first}, ..., {last})".format(
+            n=self._n, k=self._k, first=self[0], last=self[-1]
+        )
 
     def __iter__(self):
         yield from itertools.combinations(self._s, self._k)
@@ -85,8 +91,13 @@ class Combinations:
 
         if not 0 <= index < self._len:
             raise IndexError(
-                f"Index {index} out of bounds for {self}. "
-                f"Must be in range [{-self._len}, {self._len - 1}]."
+                "Index {index} out of bounds for {self}. "
+                "Must be in range [{start}, {end}].".format(
+                    index=index,
+                    self=self,
+                    start=-self._len,
+                    end=self._len - 1
+                )
             )
 
         # Compute the combinadic of the complement of the index

@@ -1,0 +1,2 @@
+# A summary of all packages that should not have to be listed explicitly.
+pathlib2    # pytest specifies 'pathlib2>=2.2.0;python_version<"3.6"'
