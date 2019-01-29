@@ -29,6 +29,7 @@ branches:
 deploy:
   on:
     python: '3.6'
+    env: TOXENV=linting,formatting,typing,docs-html
     tags: true
   provider: pypi
   user: "sprigmaintainer"
