@@ -6,6 +6,5 @@ sphinx                  # docs-html
 m2r                     # docs-html
 sphinxcontrib-apidoc    # docs-html
 yapf                    # formatting
-isort                   # linting
 pylint                  # linting
 mypy                    # typing
