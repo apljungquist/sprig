@@ -8,7 +8,8 @@ import operator
 from typing import Generator, Iterable, Tuple, Union
 
 
-def _comb(n, k):
+def comb(n, k):
+    """Compute binomial coefficient n choose k"""
     if not 0 <= k <= n:
         return 0
 
@@ -35,7 +36,7 @@ class Combinations:
         self._s = list(s)
         self._n = len(self._s)
         self._k = k
-        self._len = int(_comb(self._n, self._k))
+        self._len = int(comb(self._n, self._k))
 
     def __len__(self):
         return self._len
@@ -156,11 +157,11 @@ class Combinations:
             if lower <= limit < upper:
                 return Combinations.max_n_cache[k][(lower, upper)], lower
 
-        lower = int(_comb(n, k))
+        lower = int(comb(n, k))
         if lower > limit:
             n, lower = Combinations.max_n_choose_k_below_limit(n - 1, k, limit)
 
-        upper = int(_comb(n + 1, k))
+        upper = int(comb(n + 1, k))
 
         Combinations.max_n_cache[k][(lower, upper)] = n
         return n, lower
