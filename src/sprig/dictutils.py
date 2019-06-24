@@ -1,7 +1,8 @@
 """
 A collection of convenient methods when working with dicts
 """
-from typing import Any, Dict
+from collections import defaultdict
+from typing import Any, Dict, TypeVar, Callable, Iterable, Hashable, List
 
 # 'Recursive types not fully supported yet, nested types replaced with "Any"'
 TreeT = Dict[str, Any]
@@ -204,3 +205,38 @@ def _walk(tree, root, sep):
             yield from _walk(value, path, sep)
         else:
             yield path, value
+
+
+T = TypeVar("T")
+V = TypeVar("V", bound=Hashable)
+
+
+def group_by(
+        iterable: Iterable[T],
+        keyfunc: Callable[[T], V],
+) -> Dict[V, List[T]]:
+    """Group items by key
+
+    Similar to `itertools.groupby` except
+    * consumes input eagerly,
+    * order of input does not matter,
+    * returned type is different.
+    """
+    result = defaultdict(list)  # type:Dict[V, List[T]]
+    for value in iterable:
+        key = keyfunc(value)
+        result[key].append(value)
+    return result
+
+
+def invert(mapping: Dict[T, V]) -> Dict[V, T]:
+    """Invert dictionary
+
+    Trivial function but good for two reasons:
+    * it gives the operation a name, and
+    * it catches an edge case that is easily forgotten.
+    """
+    result = {v: k for (k, v) in mapping.items()}  # type: Dict[V, T]
+    if len(result) != len(mapping):
+        raise ValueError("Duplicate values in mapping")
+    return result
