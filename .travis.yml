@@ -14,7 +14,7 @@ matrix:
   - env: TOXENV=x-latest
   fast_finish: true
 install:
-- pip install -c requirements.txt tox
+- pip install -c constraints.txt tox-constraints
 script:
 - tox
 cache:

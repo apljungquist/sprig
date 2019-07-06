@@ -1,7 +1,7 @@
 # A summary of all packages needed to manage the project, excluding packages
 # that are not used directly.
 pip-tools
-tox
+tox-constraints
 
 # The following packages are often considered to be unsafe in a requirements
 # file. However

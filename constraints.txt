@@ -242,10 +242,13 @@ sphinxcontrib-websupport==1.1.0 \
 toml==0.10.0 \
     --hash=sha256:229f81c57791a41d65e399fc06bf0848bab550a9dfd5ed66df18ce5f05e73d5c \
     --hash=sha256:235682dd292d5899d361a811df37e04a8828a5b1da3115886b73cf81ebc9100e \
-    # via tox
+    # via tox, tox-constraints
+tox-constraints==0.6 \
+    --hash=sha256:3ccd3404e6329fce475ce0b64a7aacbd06f8b01b658f6279ae140700555414b0
 tox==3.7.0 \
     --hash=sha256:04f8f1aa05de8e76d7a266ccd14e0d665d429977cd42123bc38efa9b59964e9e \
-    --hash=sha256:25ef928babe88c71e3ed3af0c464d1160b01fca2dd1870a5bb26c2dea61a17fc
+    --hash=sha256:25ef928babe88c71e3ed3af0c464d1160b01fca2dd1870a5bb26c2dea61a17fc \
+    # via tox-constraints
 typed-ast==1.2.0 \
     --hash=sha256:023625bfa9359e29bd6e24cac2a4503495b49761d48a5f1e38333fc4ac4d93fe \
     --hash=sha256:07591f7a5fdff50e2e566c4c1e9df545c75d21e27d98d18cb405727ed0ef329c \
