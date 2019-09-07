@@ -14,8 +14,9 @@ dist/
 # mypy
 .mypy_cache/
 
-# tox
+# tox and other venvs
 .tox/
+venv/
 
 # Compiled
 __pycache__/
