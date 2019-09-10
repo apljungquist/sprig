@@ -2,7 +2,7 @@ from typing import Any, Callable, Iterable, List, TypeVar
 
 from sprig import iterutils
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def _merge(iterables, key=lambda x: x):

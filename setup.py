@@ -5,23 +5,25 @@ import re
 import setuptools
 
 
-readme_path = os.path.join(os.path.dirname(__file__), 'README.md')
-with open(readme_path, 'r') as fp:
+readme_path = os.path.join(os.path.dirname(__file__), "README.md")
+with open(readme_path, "r") as fp:
     long_description = fp.read()
 
 here = os.path.abspath(os.path.dirname(__file__))
 
+
 def read(*parts):
-    with codecs.open(os.path.join(here, *parts), 'r') as fp:
+    with codecs.open(os.path.join(here, *parts), "r") as fp:
         return fp.read()
+
 
 def find_version(*file_paths):
     version_file = read(*file_paths)
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-                              version_file, re.M)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M)
     if version_match:
         return version_match.group(1)
     raise RuntimeError("Unable to find version string.")
+
 
 setuptools.setup(
     name="sprig",
@@ -33,8 +35,8 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/apljungquist/sprig",
     license="MIT",
-    packages=setuptools.find_packages('src'),
-    package_dir={'': 'src'},
+    packages=setuptools.find_packages("src"),
+    package_dir={"": "src"},
     install_requires=[],
     classifiers=[
         "Development Status :: 3 - Alpha",

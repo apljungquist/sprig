@@ -62,10 +62,7 @@ class Combinations:
     def __iter__(self):
         yield from itertools.combinations(self._s, self._k)
 
-    def __getitem__(
-            self,
-            index: Union[int, slice],
-    ) -> Union[Tuple, Iterable[Tuple]]:
+    def __getitem__(self, index: Union[int, slice]) -> Union[Tuple, Iterable[Tuple]]:
         """
         Get the index'th combination in lexicographical order.
 
@@ -94,10 +91,7 @@ class Combinations:
             raise IndexError(
                 "Index {index} out of bounds for {self}. "
                 "Must be in range [{start}, {end}].".format(
-                    index=index,
-                    self=self,
-                    start=-self._len,
-                    end=self._len - 1
+                    index=index, self=self, start=-self._len, end=self._len - 1
                 )
             )
 
@@ -138,11 +132,7 @@ class Combinations:
     max_n_cache = collections.defaultdict(dict)  # type: ignore
 
     @staticmethod
-    def max_n_choose_k_below_limit(
-            n: int,
-            k: int,
-            limit: int,
-    ) -> Tuple[int, int]:
+    def max_n_choose_k_below_limit(n: int, k: int, limit: int) -> Tuple[int, int]:
         """
         Compute the largest n s.t. n choose k < limit.
         Return also the corresponding value of n choose k for optimization.

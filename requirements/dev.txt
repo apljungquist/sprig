@@ -1,5 +1,6 @@
 # A summary of all packages needed to manage the project, excluding packages
 # that are not used directly.
+black
 pip-tools
 tox-constraints
 

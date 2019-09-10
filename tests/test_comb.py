@@ -41,14 +41,14 @@ def assert_equivalent_behaviour(func_a, func_b):
     assert result_a == result_b
 
 
-@pytest.mark.parametrize('s, k', parameters)
+@pytest.mark.parametrize("s, k", parameters)
 def test_len_agrees_with_itertools(s, k):
     actual = comb.Combinations(s, k)
     expected = list(itertools.combinations(s, k))
     assert len(actual) == len(expected)
 
 
-@pytest.mark.parametrize('s, k', parameters)
+@pytest.mark.parametrize("s, k", parameters)
 def test_getitem_agrees_with_itertools(s, k):
     actual = comb.Combinations(s, k)
     expected = list(itertools.combinations(s, k))
@@ -59,36 +59,36 @@ def test_getitem_agrees_with_itertools(s, k):
         )
 
 
-@pytest.mark.parametrize('s, k', parameters)
+@pytest.mark.parametrize("s, k", parameters)
 def test_str_does_not_raise(s, k):
     str(comb.Combinations(s, k))
 
 
 def test_contains_by_example():
-    combinations = comb.Combinations('AABC', 2)
-    assert 'AA' in combinations  # Treats every element as unique
-    assert 'AB' in combinations  # A straight forward case
-    assert 'BB' not in combinations  # Combinations are without replacement
-    assert 'AAB' not in combinations  # Wrong length (too long)
-    assert 'A' not in combinations  # Wrong length (too short)
-    assert 'CA' in combinations  # Order does not matter
+    combinations = comb.Combinations("AABC", 2)
+    assert "AA" in combinations  # Treats every element as unique
+    assert "AB" in combinations  # A straight forward case
+    assert "BB" not in combinations  # Combinations are without replacement
+    assert "AAB" not in combinations  # Wrong length (too long)
+    assert "A" not in combinations  # Wrong length (too short)
+    assert "CA" in combinations  # Order does not matter
 
 
-@pytest.mark.parametrize('s, k', parameters)
+@pytest.mark.parametrize("s, k", parameters)
 def test_contains_agrees_with_itertools(s, k):
     combinations = comb.Combinations(s, k)
     for combination in combinations:
         assert combination in combinations
 
 
-@pytest.mark.parametrize('s, k', parameters)
+@pytest.mark.parametrize("s, k", parameters)
 def test_contains_ignores_order(s, k):
     combinations = comb.Combinations(s, k)
     for combination in itertools.combinations(s, k):
         assert reversed(combination) in combinations
 
 
-@pytest.mark.parametrize('s, k', parameters)
+@pytest.mark.parametrize("s, k", parameters)
 def test_iter_agrees_with_itertools(s, k):
     actual = comb.Combinations(s, k)
     expected = itertools.combinations(s, k)

@@ -7,7 +7,7 @@ from typing import Any, Dict, TypeVar, Callable, Iterable, Hashable, List
 # 'Recursive types not fully supported yet, nested types replaced with "Any"'
 TreeT = Dict[str, Any]
 
-DEFAULT_SEP = '/'
+DEFAULT_SEP = "/"
 
 
 def inflate(deflated, sep=DEFAULT_SEP):
@@ -199,7 +199,7 @@ def _walk(tree, root, sep):
         if sep in key:
             raise ValueError("Key must not contain path separator")
 
-        path = root + (key, )
+        path = root + (key,)
 
         if isinstance(value, dict):
             yield from _walk(value, path, sep)
@@ -211,10 +211,7 @@ T = TypeVar("T")
 V = TypeVar("V", bound=Hashable)
 
 
-def group_by(
-        iterable: Iterable[T],
-        keyfunc: Callable[[T], V],
-) -> Dict[V, List[T]]:
+def group_by(iterable: Iterable[T], keyfunc: Callable[[T], V]) -> Dict[V, List[T]]:
     """Group items by key
 
     Similar to `itertools.groupby` except

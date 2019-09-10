@@ -2,6 +2,10 @@ alabaster==0.7.12 \
     --hash=sha256:446438bdcca0e05bd45ea2de1668c1d9b032e1a9154c2c259092d77031ddd359 \
     --hash=sha256:a661d72d58e6ea8a57f7a86e37d86716863ee5e92788398526d58b26a4e4dc02 \
     # via sphinx
+appdirs==1.4.3 \
+    --hash=sha256:9e5896d1372858f8dd3344faf4e5014d21849c756c8d5701f78f8a103b372d92 \
+    --hash=sha256:d8b24664561d0d34ddfaec54636d502d7cea6e29c3eaf68f3df6180863e2166e \
+    # via black
 astroid==2.1.0 \
     --hash=sha256:35b032003d6a863f5dcd7ec11abd5cd5893428beaa31ab164982403bcb311f22 \
     --hash=sha256:6a5d668d7dc69110de01cdf7aeec69a679ef486862a0850cc0fd5571505b6b7e \
@@ -13,11 +17,14 @@ atomicwrites==1.2.1 \
 attrs==18.2.0 \
     --hash=sha256:10cbf6e27dbce8c30807caf056c8eb50917e0eaafe86347671b57254006c3e69 \
     --hash=sha256:ca4be454458f9dec299268d472aaa5a11f67a4ff70093396e1ceae9c76cf4bbb \
-    # via pytest
+    # via black, pytest
 babel==2.6.0 \
     --hash=sha256:6778d85147d5d85345c14a26aada5e478ab04e39b078b0745ee6870c2b5cf669 \
     --hash=sha256:8cba50f48c529ca3fa18cf81fa9403be176d374ac4d60738b839122dfaaa3d23 \
     # via sphinx
+black==19.3b0 \
+    --hash=sha256:09a9dcb7c46ed496a9850b76e4e825d6049ecd38b611f1224857a79bd985a8cf \
+    --hash=sha256:68950ffd4d9169716bcb8719a56c07a2f4485354fec061cdd5910aa07369731c
 certifi==2018.11.29 \
     --hash=sha256:47f9c83ef4c0c621eaef743f133f09fa8a74a9b75f037e8624f83bd1b6626cb7 \
     --hash=sha256:993f830721089fef441cdfeb4b2c8c9df86f0c63239f06bd025a76a7daddb033 \
@@ -29,7 +36,7 @@ chardet==3.0.4 \
 click==7.0 \
     --hash=sha256:2335065e6395b9e67ca716de5f7526736bfa6ceead690adf616d925bdc622b13 \
     --hash=sha256:5b94b49521f6456670fdb30cd82a4eca9412788a93fa6dd6df72c94d5a8ff2d7 \
-    # via pip-tools
+    # via black, pip-tools
 codecov==2.0.15 \
     --hash=sha256:8ed8b7c6791010d359baed66f84f061bba5bd41174bf324c31311e8737602788 \
     --hash=sha256:ae00d68e18d8a20e9c3288ba3875ae03db3a8e892115bf9b83ef20507732bed4
@@ -242,7 +249,7 @@ sphinxcontrib-websupport==1.1.0 \
 toml==0.10.0 \
     --hash=sha256:229f81c57791a41d65e399fc06bf0848bab550a9dfd5ed66df18ce5f05e73d5c \
     --hash=sha256:235682dd292d5899d361a811df37e04a8828a5b1da3115886b73cf81ebc9100e \
-    # via tox, tox-constraints
+    # via black, tox, tox-constraints
 tox-constraints==0.6 \
     --hash=sha256:3ccd3404e6329fce475ce0b64a7aacbd06f8b01b658f6279ae140700555414b0
 tox==3.7.0 \
@@ -283,9 +290,6 @@ virtualenv==16.3.0 \
 wrapt==1.11.1 \
     --hash=sha256:4aea003270831cceb8a90ff27c4031da6ead7ec1886023b80ce0dfe0adf61533 \
     # via astroid
-yapf==0.25.0 \
-    --hash=sha256:8aa7f9abdb97b4da4d3227306b88477982daafef0a96cc41639754ca31f46d55 \
-    --hash=sha256:f2df5891481f94ddadfbf8ae8ae499080752cfb06005a31bbb102f3012f8b944
 
 # The following packages are considered to be unsafe in a requirements file:
 pip==19.0.1 \

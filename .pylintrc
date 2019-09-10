@@ -1,5 +1,17 @@
 [BASIC]
 good-names=i,j,k,n,ex,Run,_,T,v,V
 
+
 [MISCELLANEOUS]
 notes=FIXME,XXX
+
+
+[FORMAT]
+# Match black formatter
+max-line-length=88
+
+
+[MESSAGES CONTROL]
+# Match black formatter
+disable=C0330
+
