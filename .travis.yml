@@ -3,9 +3,6 @@ dist: xenial
 language: python
 python:
   - '3.7'
-  - '3.6'
-  - '3.5'
-  - 'pypy3.5-6.0'
 env:
   - TOXENV=x-stable,x-cov,cov-codecov
   - TOXENV=x-latest
@@ -28,7 +25,7 @@ branches:
   - /^\d+\.\d+(\.\d+)?(-\S*)?$/
 deploy:
   on:
-    python: '3.6'
+    python: '3.7'
     env: TOXENV=linting,formatting,typing,docs-html
     tags: true
   provider: pypi
