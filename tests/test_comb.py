@@ -1,9 +1,9 @@
+# pylint: disable=missing-docstring,invalid-name
 import functools
 import itertools
 
-from sprig import comb
-
 import pytest
+from sprig import comb
 
 parameters = [
     ([], 0),  # 0-combinations, empty collection
@@ -23,6 +23,7 @@ parameters = [
 
 
 def assert_equivalent_behaviour(func_a, func_b):
+    # pylint: disable=broad-except,unidiomatic-typecheck
     try:
         result_a = func_a()
         exception_a = None

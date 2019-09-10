@@ -1,8 +1,10 @@
+# pylint: disable=missing-docstring
 import os
 import sys
 
 
 def _get_msg():
+    # pylint: disable=possibly-unused-variable,too-many-branches,too-many-branches,no-else-return
     os_name = os.name
     py_name = sys.implementation.name
     py_major = sys.implementation.version.major

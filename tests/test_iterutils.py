@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring,invalid-name
 from typing import TypeVar
 
 from sprig import iterutils

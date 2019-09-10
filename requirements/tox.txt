@@ -9,6 +9,6 @@ flake8                # from linting
 m2r                   # from docs-html
 mypy                  # from typing
 pylint                # from linting
-pytest                # from py37-cov, py37-latest, py37-stable
+pytest                # from linting, py37-cov, py37-latest, py37-stable
 sphinx                # from docs-html
 sphinxcontrib-apidoc  # from docs-html
