@@ -5,6 +5,7 @@
 black                 # from formatting
 codecov               # from cov-codecov
 coverage              # from cov-html, py37-cov
+flake8                # from linting
 m2r                   # from docs-html
 mypy                  # from typing
 pylint                # from linting

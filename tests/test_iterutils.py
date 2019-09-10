@@ -1,4 +1,4 @@
-from typing import Any, Callable, Iterable, List, TypeVar
+from typing import TypeVar
 
 from sprig import iterutils
 
