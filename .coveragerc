@@ -1,0 +1,8 @@
+[run]
+branch = True
+source = sprig,tests
+
+[paths]
+source =
+    src/sprig
+    .tox/*/lib/python*/site-packages/sprig
