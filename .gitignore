@@ -21,3 +21,5 @@ venv/
 # Compiled
 __pycache__/
 
+docs/_build/
+docs/api/
