@@ -1,3 +1,4 @@
+# pylint: disable=missing-docstring
 import codecs
 import os
 import re
@@ -5,16 +6,10 @@ import re
 import setuptools
 
 
-readme_path = os.path.join(os.path.dirname(__file__), "README.md")
-with open(readme_path, "r") as fp:
-    long_description = fp.read()
-
-here = os.path.abspath(os.path.dirname(__file__))
-
-
 def read(*parts):
-    with codecs.open(os.path.join(here, *parts), "r") as fp:
-        return fp.read()
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, *parts), "r") as f:
+        return f.read()
 
 
 def find_version(*file_paths):
@@ -31,7 +26,7 @@ setuptools.setup(
     author="AP Ljungquist",
     author_email="ap@ljungquist.eu",
     description="A home to code that would otherwise be homeless",
-    long_description=long_description,
+    long_description=read("README.md"),
     long_description_content_type="text/markdown",
     url="https://github.com/apljungquist/sprig",
     license="MIT",
