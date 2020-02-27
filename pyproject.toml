@@ -1,0 +1,11 @@
+[build-system]
+requires = [
+    "setuptools >= 42",
+    "setuptools_scm[toml]>=3.4",
+    "wheel"
+    ]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+write_to = "src/sprig/version.py"
+write_to_template = "# pylint: disable=missing-docstring\n__version__ = \"{version}\"\n"

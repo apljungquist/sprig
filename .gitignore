@@ -20,3 +20,5 @@ dist/
 # Compiled
 __pycache__/
 
+# generated source code
+src/sprig/version.py

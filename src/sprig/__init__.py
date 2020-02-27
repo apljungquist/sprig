@@ -1,2 +1,4 @@
 # pylint: disable=missing-docstring
-__version__ = "0.3.4"
+from sprig import version
+
+__version__ = version.__version__
