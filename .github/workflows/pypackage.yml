@@ -1,0 +1,58 @@
+name: Python package
+
+on: [push]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-18.04, windows-2019]
+        py: [3.7, 3.5, pypy3]
+        exclude:
+          - os: windows-2019
+            py: 3.5
+        include:
+          - os: ubuntu-18.04
+            py: 3.7
+            extratoxenv: ",linting,formatting,typing,docs-html"
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.py }}
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.py }}
+    - name: Print python version
+      run: python --version
+    - name: Install dependencies
+      run: |
+        pip install -c requirements.txt pip setuptools
+        pip install -c requirements.txt tox
+    - name: Run tests with tox
+      env:
+        TOXENV: "py-stable,py-cov,cov-codecov${{ matrix.extratoxenv }}"
+      run: tox
+  deploy:
+    needs: test
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        pip install -c requirements.txt pip setuptools
+        pip install -c requirements.txt tox
+    - name: Build sdist and wheel
+      env:
+        TOXENV: "build"
+      run: tox
+    - name: Publish to PyPI
+      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: __token__
+        password: ${{ secrets.pypi_password }}
+
