@@ -8,19 +8,19 @@ def _get_msg():
     py_major = sys.implementation.version.major
     py_minor = sys.implementation.version.minor
     py_micro = sys.implementation.version.micro
-    hit_msg = '{os_name} {py_name}{py_minor}.{py_major}.{py_micro}... Check'.format_map(
+    hit_msg = "{os_name} {py_name}{py_minor}.{py_major}.{py_micro}... Check".format_map(
         locals()
     )
-    miss_msg = '{os_name} {py_name}{py_minor}.{py_major}.{py_micro}... Huh?'.format_map(
+    miss_msg = "{os_name} {py_name}{py_minor}.{py_major}.{py_micro}... Huh?".format_map(
         locals()
     )
 
-    if os_name == 'posix':
-        if py_name == 'pypy':
+    if os_name == "posix":
+        if py_name == "pypy":
             if py_major == 3:
                 if py_minor == 5:
                     return hit_msg
-        elif py_name == 'cpython':
+        elif py_name == "cpython":
             if py_major == 3:
                 if py_minor == 5:
                     return hit_msg
@@ -28,8 +28,8 @@ def _get_msg():
                     return hit_msg
                 elif py_minor == 7:
                     return hit_msg
-    elif os_name == 'nt':
-        if py_name == 'cpython':
+    elif os_name == "nt":
+        if py_name == "cpython":
             if py_major == 3:
                 if py_minor == 7:
                     return hit_msg

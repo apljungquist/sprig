@@ -2,17 +2,25 @@
 Some utility functions for working with iterators.
 """
 import heapq
+
 # pylint does not recognize type hints in comments, and
 # py35 does not support variable type hints any other way
 # TODO: Figure out why `isort` and `yapf` can not agree on this import statement
-from typing import Any, Callable, Iterable, Iterator, List, Tuple, TypeVar  # pylint: disable=W0611
+from typing import (  # pylint: disable=W0611
+    Any,
+    Callable,
+    Iterable,
+    Iterator,
+    List,
+    Tuple,
+    TypeVar,
+)
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def imerge(
-        iterables: Iterable[Iterable[T]],
-        key: Callable[[T], Any] = lambda x: x,
+    iterables: Iterable[Iterable[T]], key: Callable[[T], Any] = lambda x: x,
 ) -> Iterable[T]:
     """Merge individually sorted iterables to a single sorted iterator.
 

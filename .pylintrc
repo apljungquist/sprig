@@ -3,3 +3,11 @@ good-names=i,j,k,n,ex,Run,_,T,v,V
 
 [MISCELLANEOUS]
 notes=FIXME,XXX
+
+
+[FORMAT]
+max-line-length=88  # for black
+
+[MESSAGES CONTROL]
+disable=
+    C0330,  # for black

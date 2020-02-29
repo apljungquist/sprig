@@ -2,8 +2,8 @@ import os
 
 import setuptools
 
-readme_path = os.path.join(os.path.dirname(__file__), 'README.md')
-with open(readme_path, 'r') as fp:
+readme_path = os.path.join(os.path.dirname(__file__), "README.md")
+with open(readme_path, "r") as fp:
     long_description = fp.read()
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -17,8 +17,8 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/apljungquist/sprig",
     license="MIT",
-    packages=setuptools.find_packages('src'),
-    package_dir={'': 'src'},
+    packages=setuptools.find_packages("src"),
+    package_dir={"": "src"},
     install_requires=[],
     classifiers=[
         "Development Status :: 3 - Alpha",

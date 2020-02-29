@@ -5,6 +5,6 @@ codecov                 # cov-codecov
 sphinx                  # docs-html
 m2r                     # docs-html
 sphinxcontrib-apidoc    # docs-html
-yapf                    # formatting
+black                   # formatting
 pylint                  # linting
 mypy                    # typing
