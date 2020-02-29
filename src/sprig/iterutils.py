@@ -3,10 +3,7 @@ Some utility functions for working with iterators.
 """
 import heapq
 
-# pylint does not recognize type hints in comments, and
-# py35 does not support variable type hints any other way
-# TODO: Figure out why `isort` and `yapf` can not agree on this import statement
-from typing import (  # pylint: disable=W0611
+from typing import (
     Any,
     Callable,
     Iterable,
@@ -43,7 +40,7 @@ def imerge(
     if not callable(key):
         raise TypeError("Key must be callable")
 
-    heap = []  # type: List[Tuple[Any, int, T, Iterator[T]]]
+    heap: List[Tuple[Any, int, T, Iterator[T]]] = []
     for i, iterable in enumerate(iterables):
         iterator = iter(iterable)
         try:

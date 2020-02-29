@@ -10,8 +10,7 @@ TreeT = Dict[str, Any]
 DEFAULT_SEP = "/"
 
 
-def inflate(deflated, sep=DEFAULT_SEP):
-    # type: (Dict[str, Any], str) -> TreeT
+def inflate(deflated: Dict[str, Any], sep: str = DEFAULT_SEP) -> TreeT:
     """
     Interpret the keys as paths in a tree to its leaf nodes, the values as the
     corresponding value and return a nested dict representation of that tree.
@@ -88,7 +87,7 @@ def inflate(deflated, sep=DEFAULT_SEP):
         TypeError: Key must be a string
 
     """
-    ret = {}  # type: TreeT
+    ret: TreeT = {}
     for key, value in deflated.items():
         if not isinstance(key, str):
             raise TypeError("Key must be a string")
@@ -113,8 +112,7 @@ def _set(tree, path, value):
         _set(tree[head], tail, value)
 
 
-def deflate(inflated, sep=DEFAULT_SEP):
-    # type: (TreeT, str) -> Dict[str, Any]
+def deflate(inflated: TreeT, sep: str = DEFAULT_SEP) -> Dict[str, Any]:
     """
     Walk the tree provided as a nested dict and for every leaf node add its
     path and value as a key: value mapping in the returned dictionary.
@@ -219,7 +217,7 @@ def group_by(iterable: Iterable[T], keyfunc: Callable[[T], V],) -> Dict[V, List[
     * order of input does not matter,
     * returned type is different.
     """
-    result = defaultdict(list)  # type:Dict[V, List[T]]
+    result: Dict[V, List[T]] = defaultdict(list)
     for value in iterable:
         key = keyfunc(value)
         result[key].append(value)
@@ -233,7 +231,7 @@ def invert(mapping: Dict[T, V]) -> Dict[V, T]:
     * it gives the operation a name, and
     * it catches an edge case that is easily forgotten.
     """
-    result = {v: k for (k, v) in mapping.items()}  # type: Dict[V, T]
+    result: Dict[V, T] = {v: k for (k, v) in mapping.items()}
     if len(result) != len(mapping):
         raise ValueError("Duplicate values in mapping")
     return result
