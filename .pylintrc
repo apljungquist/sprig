@@ -1,5 +1,5 @@
 [BASIC]
-good-names=i,j,k,n,ex,Run,_,T,v,V
+good-names=i,j,k,n,ex,Run,_,T,U,v,V,e
 
 [MISCELLANEOUS]
 notes=FIXME,XXX
@@ -10,4 +10,5 @@ max-line-length=88  # for black
 
 [MESSAGES CONTROL]
 disable=
-    C0330,  # for black
+    C0330,              # for black
+    C0114,C0115,C0116,  # no dosctring is better than a bad docstring

@@ -1,2 +1,4 @@
 # A summary of all packages needed to by the package as they would be listed in
 # the `install_requires` argument to `setuptools.setup`
+more_itertools
+typing_extensions

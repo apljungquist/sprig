@@ -2,7 +2,6 @@
 Some utility functions for working with iterators.
 """
 import heapq
-
 from typing import (
     Any,
     Callable,
@@ -13,7 +12,10 @@ from typing import (
     TypeVar,
 )
 
+import more_itertools  # type: ignore
+
 T = TypeVar("T")
+U = TypeVar("U")
 
 
 def imerge(
@@ -60,3 +62,19 @@ def imerge(
 
         k = key(v)
         heapq.heappush(heap, (k, i, v, iterator))
+
+
+def bucket_merge(
+    iterable: Iterable[T],
+    sort_key: Callable[[T], Any],
+    bucket_key: Callable[[T], U],
+    buckets: Iterable[U],
+) -> Iterator[T]:
+    """Sort a partially sorted iterable lazily
+
+    If the iterable can be split into individually sorted buckets then this function
+    will sort it.
+    """
+    buckets = set(buckets)
+    iterables = more_itertools.bucket(iterable, bucket_key, lambda x: x in buckets)
+    yield from imerge((iterables[bucket] for bucket in buckets), key=sort_key)
