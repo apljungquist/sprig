@@ -1,4 +1,6 @@
-from typing import Any, Callable, Iterable, List, TypeVar
+from typing import TypeVar
+
+import pytest
 
 from sprig import iterutils
 
@@ -41,3 +43,30 @@ def test_imerge_is_not_eager():
     # One list will be shorter than the other but neither will have been exhausted
     assert list(a)
     assert list(b)
+
+
+@pytest.mark.parametrize(
+    "iterable, edges, expected",
+    [
+        ([], [], [[]]),
+        ([0], [], [[0]]),
+        ([0], [1], [[0], []]),
+        ([], [1], [[], []]),
+        ([], [1, 3], [[], [], []]),
+        ([2], [1, 3], [[], [2], []]),
+        ([2], [1, 2], [[], [], [2]]),
+    ],
+)
+def test_split_by_example(iterable, edges, expected):
+    assert list(iterutils.split(iterable, edges)) == expected
+
+
+@pytest.mark.parametrize("iterable", [[], [2], [2, 4, 6]])
+@pytest.mark.parametrize("edges", [[], [1], [1, 2, 3]])
+def test_split_yields_correct_number_of_buckets(iterable, edges):
+    assert len(list(iterutils.split(iterable, edges))) == len(edges) + 1
+
+
+@pytest.mark.xfail()
+def test_split_is_not_eager():
+    raise NotImplementedError

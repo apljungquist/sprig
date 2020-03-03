@@ -2,16 +2,8 @@
 Some utility functions for working with iterators.
 """
 import heapq
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    Iterator,
-    List,
-    Tuple,
-    TypeVar,
-)
-
+from typing import Any, Callable, Iterable, Iterator, List, Tuple, TypeVar, Optional
+import itertools
 import more_itertools  # type: ignore
 
 T = TypeVar("T")
@@ -23,7 +15,8 @@ def imerge(
 ) -> Iterable[T]:
     """Merge individually sorted iterables to a single sorted iterator.
 
-    This is simlar to the merge step in merge-sort except
+    This is similar to the merge step in merge-sort except
+
     * it handles an arbitrary number of iterators, and
     * eagerly consumes only one item from each iterator.
 
@@ -78,3 +71,79 @@ def bucket_merge(
     buckets = set(buckets)
     iterables = more_itertools.bucket(iterable, bucket_key, lambda x: x in buckets)
     yield from imerge((iterables[bucket] for bucket in buckets), key=sort_key)
+
+
+def split(
+    iterable: Iterable, edges: Iterable, cmp: Optional[Callable[..., bool]] = None
+):
+    """Yield lists of items from ``iterable`` grouped by ``edges``
+
+    By default this function will insert a split before an item that is equal to an
+    edge but this can be adjusted using ``cmp``.
+
+    ``cmp`` can also be used if the items in ``iterable`` cannot directly be compared
+    to the edges.
+
+    The number of lists yielded is guaranteed to be ``len(edges) + 1``.
+
+    Note that whereas :func:`more_itertools.split_before` will not yield empty buckets,
+    this function will.
+
+    >>> list(split([0, 2, 4, 6, 8], [3, 4]))
+    [[0, 2], [], [4, 6, 8]]
+
+    >>> after = lambda item, edge: item <= edge
+    >>> list(split([0, 2, 4, 6, 8], [3, 4], after))
+    [[0, 2], [4], [6, 8]]
+
+    >>> list(split([2], [1, 3]))
+    [[], [2], []]
+    """
+
+    def before(item, edge):
+        return item < edge
+
+    if cmp is None:
+        cmp = before
+
+    iterable = iter(iterable)
+    edges = iter(edges)
+
+    try:
+        edge = next(edges)
+    except StopIteration:
+        yield list(iterable)
+        return
+
+    bucket: List[Any] = []
+    for item in iterable:
+        while not cmp(item, edge):
+            yield bucket
+            bucket = []
+            try:
+                edge = next(edges)
+            except StopIteration:
+                bucket.append(item)
+                bucket.extend(iterable)
+                yield bucket
+                return
+        bucket.append(item)
+
+    yield bucket
+    yield []
+    for _ in edges:
+        yield []
+
+
+def split_annotated(iterable, edges, cmp=None):
+    """Like :func:`split` but annotates the buckets with their edges
+
+    >>> list(split_annotated([0, 2, 4, 6, 8], [3, 4]))
+    [(None, 3, [0, 2]), (3, 4, []), (4, None, [4, 6, 8])]
+    """
+    teed = itertools.tee(edges, 3)
+    yield from zip(
+        itertools.chain([None], teed[0]),
+        itertools.chain(teed[1], [None]),
+        split(iterable, teed[2], cmp),
+    )
