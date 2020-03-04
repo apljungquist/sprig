@@ -19,7 +19,7 @@ setuptools.setup(
     license="MIT",
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
-    install_requires=["more_itertools", "typing_extensions",],
+    install_requires=["more_itertools", "typing_extensions", "pytz"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3",

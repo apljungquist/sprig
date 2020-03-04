@@ -2,3 +2,4 @@
 # the `install_requires` argument to `setuptools.setup`
 more_itertools
 typing_extensions
+pytz
