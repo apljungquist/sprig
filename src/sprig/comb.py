@@ -5,10 +5,18 @@ import collections
 import functools
 import itertools
 import operator
-from typing import Generator, Iterable, Tuple, Union
+from typing import (
+    Iterable,
+    Tuple,
+    Union,
+    Generic,
+    TypeVar,
+    Iterator,
+    overload,
+)
 
 
-def comb(n, k):
+def comb(n: int, k: int) -> int:
     """Compute binomial coefficient n choose k"""
     if not 0 <= k <= n:
         return 0
@@ -19,7 +27,10 @@ def comb(n, k):
     return numerator // denominator
 
 
-class Combinations:
+T = TypeVar("T")
+
+
+class Combinations(Generic[T]):
     """
     Create an object that represent a collection of combinations.
 
@@ -27,7 +38,7 @@ class Combinations:
     `itertools.combinations`.
     """
 
-    def __init__(self, s: Iterable, k: int) -> None:
+    def __init__(self, s: Iterable[T], k: int) -> None:
         """
         Return a sequence of all k-combinations from the collection s.
         The sequence is consistent with itertools.combinations but can be
@@ -38,10 +49,10 @@ class Combinations:
         self._k = k
         self._len = int(comb(self._n, self._k))
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self._len
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self._len == 0:
             return "Combinations({n}, {k}) = ()".format(n=self._n, k=self._k)
 
@@ -59,10 +70,20 @@ class Combinations:
             n=self._n, k=self._k, first=self[0], last=self[-1]
         )
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Tuple[T, ...]]:
         yield from itertools.combinations(self._s, self._k)
 
-    def __getitem__(self, index: Union[int, slice],) -> Union[Tuple, Iterable[Tuple]]:
+    @overload
+    def __getitem__(self, index: int) -> Tuple[T, ...]:
+        ...
+
+    @overload
+    def __getitem__(self, index: slice) -> Iterable[Tuple[T, ...]]:
+        ...
+
+    def __getitem__(
+        self, index: Union[int, slice],
+    ) -> Union[Tuple[T, ...], Iterable[Tuple[T, ...]]]:
         """
         Get the index'th combination in lexicographical order.
 
@@ -101,7 +122,7 @@ class Combinations:
         # Convert the combinadic (descending order) to a combination (ascending order)
         return tuple(self._s[self._n - 1 - i] for i in combinadic)
 
-    def __contains__(self, selection):
+    def __contains__(self, selection: Tuple[T, ...]) -> bool:
         # A selection is a k-combination of a collection iff it contains k
         # elements ...
         subset = collections.Counter(selection)
@@ -111,7 +132,7 @@ class Combinations:
         superset = collections.Counter(self._s)
         return all(subset[k] <= superset[k] for k in subset)
 
-    def gen_combinadic(self, index: int) -> Generator[int, None, None]:
+    def gen_combinadic(self, index: int) -> Iterator[int]:
         """
         Compute the index'th combinadic.
 

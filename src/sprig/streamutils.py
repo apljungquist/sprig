@@ -11,6 +11,7 @@ from typing import (
     Tuple,
     List,
     Generic,
+    Iterable,
 )
 
 from typing_extensions import Protocol
@@ -132,7 +133,7 @@ class BucketMerger(Generic[T, U, V]):
             self.unregister(src)
 
 
-class Bucket:
+class _Bucket:
     def __init__(self):
         self._deque = collections.deque()
 
@@ -152,23 +153,29 @@ class Bucket:
             raise StopIteration
 
 
-class SimpleBucketMerger:
+class SimpleBucketMerger(Generic[T]):
     """A simpler and less flexible version
 
     Implemented as warm up, kept for comparison (for now).
     """
 
-    def __init__(self, sort_key, bucket_key, bucket_keys, callback=None):
+    def __init__(
+        self,
+        sort_key: Callable[[T], ComparableT],
+        bucket_key: Callable[[T], U],
+        bucket_keys: Iterable[U],
+        callback: Callable[[T], Any],
+    ) -> None:
         self._bucket_key = bucket_key
         self._callback = callback
-        self._buckets = {k: Bucket() for k in bucket_keys}
+        self._buckets = {k: _Bucket() for k in bucket_keys}
         self._sorted = iterutils.imerge(self._buckets.values(), sort_key)
 
-    def put(self, item):
+    def put(self, item: T) -> None:
         self._buckets[self._bucket_key(item)].append(item)
         while all(self._buckets.values()):
             self._callback(next(self._sorted))
 
-    def close(self):
+    def close(self) -> None:
         for item in self._sorted:
             self._callback(item)

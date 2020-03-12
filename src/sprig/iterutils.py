@@ -12,7 +12,7 @@ U = TypeVar("U")
 
 def imerge(
     iterables: Iterable[Iterable[T]], key: Callable[[T], Any] = lambda x: x,
-) -> Iterable[T]:
+) -> Iterator[T]:
     """Merge individually sorted iterables to a single sorted iterator.
 
     This is similar to the merge step in merge-sort except
@@ -74,8 +74,10 @@ def bucket_merge(
 
 
 def split(
-    iterable: Iterable, edges: Iterable, cmp: Optional[Callable[..., bool]] = None
-):
+    iterable: Iterable[T],
+    edges: Iterable[U],
+    cmp: Optional[Callable[[T, U], bool]] = None,
+) -> Iterator[List[T]]:
     """Yield lists of items from ``iterable`` grouped by ``edges``
 
     By default this function will insert a split before an item that is equal to an
@@ -115,7 +117,7 @@ def split(
         yield list(iterable)
         return
 
-    bucket: List[Any] = []
+    bucket: List[T] = []
     for item in iterable:
         while not cmp(item, edge):
             yield bucket
@@ -135,7 +137,11 @@ def split(
         yield []
 
 
-def split_annotated(iterable, edges, cmp=None):
+def split_annotated(
+    iterable: Iterable[T],
+    edges: Iterable[U],
+    cmp: Optional[Callable[[T, U], bool]] = None,
+) -> Iterator[Tuple[Optional[U], Optional[U], List[T]]]:
     """Like :func:`split` but annotates the buckets with their edges
 
     >>> list(split_annotated([0, 2, 4, 6, 8], [3, 4]))
