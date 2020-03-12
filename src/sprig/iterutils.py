@@ -4,7 +4,7 @@ Some utility functions for working with iterators.
 import heapq
 from typing import Any, Callable, Iterable, Iterator, List, Tuple, TypeVar, Optional
 import itertools
-import more_itertools  # type: ignore
+import more_itertools
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -68,9 +68,9 @@ def bucket_merge(
     If the iterable can be split into individually sorted buckets then this function
     will sort it.
     """
-    buckets = set(buckets)
-    iterables = more_itertools.bucket(iterable, bucket_key, lambda x: x in buckets)
-    yield from imerge((iterables[bucket] for bucket in buckets), key=sort_key)
+    buckets_ = set(buckets)
+    iterables = more_itertools.bucket(iterable, bucket_key, lambda x: x in buckets_)
+    yield from imerge((iterables[bucket] for bucket in buckets_), key=sort_key)
 
 
 def split(
