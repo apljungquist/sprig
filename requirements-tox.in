@@ -8,3 +8,4 @@ sphinxcontrib-apidoc    # docs-html
 black                   # formatting
 pylint                  # linting
 mypy                    # typing
+lxml                    # typing

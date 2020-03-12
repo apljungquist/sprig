@@ -22,3 +22,6 @@ __pycache__/
 
 # generated source code
 src/sprig/version.py
+
+# other generated files
+reports/
