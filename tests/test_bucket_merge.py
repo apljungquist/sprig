@@ -257,14 +257,60 @@ def test_timeout_merger_by_example():
         merger.put(msg, msg[0], int(msg[1:]))
         return actual_msgs, merger.senders
 
-    assert put("a10") == (["a10"], {"a"})
-    assert put("b09") == ([], {"a", "b"})  # Dropped silently because new sender
-    assert put("b11") == ([], {"a", "b"})
-    assert put("c12") == ([], {"a", "b", "c"})
-    assert put("c21") == (["b11"], {"b", "c"})
-    assert put("b22") == (["c12", "c21"], {"b", "c"})  # a presumed disconnected
+    assert put("A10") == (["A10"], {"A"})
+    assert put("B09") == ([], {"A", "B"})  # Dropped silently because new sender
+    assert put("B11") == ([], {"A", "B"})
+    assert put("C12") == ([], {"A", "B", "C"})
+    assert put("C21") == (["B11"], {"B", "C"})
+    assert put("B22") == (["C12", "C21"], {"B", "C"})  # a presumed disconnected
 
     with pytest.raises(ValueError):
-        put("b21")  # Dropped loudly because old sender
+        put("B21")  # Dropped loudly because old sender
     assert actual_msgs == []
-    assert merger.senders == {"b", "c"}
+    assert merger.senders == {"B", "C"}
+
+
+def _states(msgs):
+    result = []
+
+    def callback(obj):
+        # Convert to list for nicer diff
+        result.append((sorted(merger.senders), obj))
+
+    merger = streamutils.TimeoutMerger(callback, 10)
+
+    for msg in msgs:
+        merger.put(msg, msg[0], int(msg[1:]))
+
+    return result
+
+
+def test_timeout_merger_disconnects_sender_based_on_time_alone():
+    # In other word, who sends a message should not affect if and how a sender is
+    # disconnected
+
+    primer = ["A10", "B11", "C12"]
+    # Both A and C will trigger the release of B and regardless of which one does it,
+    # the senders that are connected when it is released should be the same.
+    # Note that B21 would release C12 as well making the comparison more involved.
+    # Since the detention and release is not what being tested here, we settle for
+    # testing only C21.
+    assert _states(primer + ["A21"]) == _states(primer + ["C21"])
+
+
+def test_timeout_sender_considered_disconnected_from_time_last_seen():
+    actual = _states(["A10", "B11", "B20", "A21", "B22"])
+    expected = [
+        (["A"], "A10"),
+        # Since timeout is 10 and time between messages from A is 11, A is disconnected
+        # before being reconnected. In the intervening time detained messages from B
+        # are released while A appears absent.
+        # TODO: Should A be considered connected only until it was last seen (current
+        #  behaviour) or until its timeout?
+        (["B"], "B11"),
+        (["B"], "B20"),
+        # Note that on subsequent messages both senders are once again considered
+        # connected.
+        (["A", "B"], "A21"),
+    ]
+    assert actual == expected
