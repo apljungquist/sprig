@@ -163,6 +163,16 @@ class TimeoutMerger(Generic[_T, _HashableT, _TimeT]):
 
     Convenient when senders leaving the cluster is a rare occurrence but probably a bad
     fit otherwise.
+
+    Note in the following example that
+    1. B1 is dropped, and
+    2. A8 is released since b has timed out.
+
+    >>> emitted = []
+    >>> merger = TimeoutMerger(emitted.append, 5)
+    >>> for m in ["A2", "B1", "B2", "A8"]: merger.put(m, m[0], int(m[1]))
+    >>> emitted
+    ['A2', 'B2', 'A8']
     """
 
     def __init__(self, callback: Callable[[_T], Any], timeout: _TimeT) -> None:
@@ -190,7 +200,15 @@ class TimeoutMerger(Generic[_T, _HashableT, _TimeT]):
 
     def _flush(self, time: _TimeT) -> None:
         # This has horrible asymptotic runtime but should be reasonably fast in
-        # practice for many cases.
+        # practice for many cases. I have a hunch this can be improved by a constant by
+        # checking the merger time to see if anything has timed out and only then
+        # scanning the timeouts to find which sender it is. I think it can be
+        # asymptotically improved by augmenting the `ManagedMerger` callback to include
+        # sender and time and track those; the straggler will be the sender for which
+        # the most recently detained and most recently released times are the same (if
+        # they are not the same then there must be at least one detained message and if
+        # there is at least one detained message then another sender must be the one
+        # holding up the cluster and due to be disconnected next).
         while self._timeout_ends:
             sender, timeout_end = min(
                 self._timeout_ends.items(), key=operator.itemgetter(0)
