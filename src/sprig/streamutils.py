@@ -1,17 +1,20 @@
 import collections
 import heapq
 import itertools
+import operator
 from typing import (
-    TypeVar,
     Any,
     Callable,
-    Optional,
-    Dict,
     Deque,
-    Tuple,
-    List,
+    Dict,
+    FrozenSet,
     Generic,
+    Hashable,
     Iterable,
+    List,
+    Optional,
+    Tuple,
+    TypeVar,
 )
 
 from typing_extensions import Protocol
@@ -21,17 +24,20 @@ from sprig import iterutils
 _SENTINEL = object()
 
 
-class ComparableT(Protocol):  # pylint: disable=too-few-public-methods
+class _SupportsSort(Protocol):  # pylint: disable=too-few-public-methods
     def __lt__(self, other):
         ...
 
 
-T = TypeVar("T")
-U = TypeVar("U")
-V = TypeVar("V", bound=ComparableT)
+_T = TypeVar("_T")
+_SortableT = TypeVar("_SortableT", bound=_SupportsSort)
+_HashableT = TypeVar("_HashableT", bound=Hashable)
+# The time type only really need to support subtraction and comparison but I am not
+# sure how to specify that
+_TimeT = TypeVar("_TimeT", int, float)
 
 
-class BucketMerger(Generic[T, U, V]):
+class ManagedMerger(Generic[_T, _HashableT, _SortableT]):
     """Sort a partially sorted iterator
 
     It must be possible to bucket the iterator into individually sorted iterators.
@@ -45,92 +51,156 @@ class BucketMerger(Generic[T, U, V]):
     * the output is sorted without regard for the case of the letter.
 
     >>> emitted = []
-    >>> lower = lambda x: x.lower()
-    >>> vowel = lambda x: x.lower() in "aeiou"
-    >>> merger = BucketMerger(lower, vowel, emitted.append)
+    >>> merger = ManagedMerger(emitted.append)
     >>> merger.register(False)
     >>> merger.register(True)
-    >>> for c in "aEbcdifgh": merger.put(c)
+    >>> for c in "aEbcdifgh": merger.put(c, c.lower() in "aeiou", c.lower())
     >>> merger.close()
     >>> "".join(emitted)
     'abcdEfghi'
     """
 
-    # pylint: disable=too-many-instance-attributes
-
-    def __init__(
-        self,
-        sort_key: Callable[[T], V],
-        bucket_key: Callable[[T], U],
-        callback: Callable[[T], Any],
-    ) -> None:
-        self._get_time = sort_key
-        self._get_src = bucket_key
+    def __init__(self, callback: Callable[[_T], Any],) -> None:
         self._callback = callback
 
-        self._channels: Dict[U, Deque[T]] = {}
-        self._blocking: Dict[U, Tuple[int, U, Deque[T]]] = {}
-        self._available: List[Tuple[V, int, U, Deque[T]]] = []
+        self._channels: Dict[_HashableT, Deque[Tuple[_SortableT, _T]]] = {}
+        self._blocking: Dict[_HashableT, int] = {}
+        self._available: List[
+            Tuple[_SortableT, int, _HashableT, Deque[Tuple[_SortableT, _T]]]
+        ] = []
         self._tie_breakers = itertools.count()
-        self._now: Optional[V] = None
+        self._time: Optional[_SortableT] = None
 
-    def register(self, src: U) -> None:
-        if src in self._channels:
+    def register(self, sender: _HashableT) -> None:
+        if sender in self._channels:
             raise ValueError
 
-        items: Deque[T] = collections.deque()
-        self._channels[src] = items
-        self._blocking[src] = next(self._tie_breakers), src, items
+        self._channels[sender] = collections.deque()
+        self._blocking[sender] = next(self._tie_breakers)
 
-    def unregister(self, src: U) -> None:
-        if src not in self._channels:
-            raise KeyError
-
-        msgs = self._channels.pop(src)
+    def unregister(self, sender: _HashableT) -> None:
+        msgs = self._channels.pop(sender)
         if msgs:
             msgs.append(_SENTINEL)  # type: ignore
         else:
-            del self._blocking[src]
+            del self._blocking[sender]
             self._flush()
 
-    def put(self, msg: T) -> None:
-        when = self._get_time(msg)
-        if self._now is not None and when < self._now:
-            raise ValueError
-
-        src = self._get_src(msg)
-        msgs = self._channels[src]
+    def put(self, msg: _T, sender: _HashableT, time: _SortableT) -> None:
+        msgs = self._channels[sender]
 
         if msgs:
-            msgs.append(msg)
+            if time < msgs[-1][0]:
+                raise ValueError
+            msgs.append((time, msg))
         else:
-            msgs.append(msg)
-            tie_breaker, _, _ = self._blocking.pop(src)
-            heapq.heappush(
-                self._available, (self._get_time(msg), tie_breaker, src, msgs)
-            )
+            if self._time is not None and time < self._time:
+                raise ValueError
+            msgs.append((time, msg))
+            tie_breaker = self._blocking.pop(sender)
+            heapq.heappush(self._available, (time, tie_breaker, sender, msgs))
             self._flush()
 
-    def _flush(self):
+    def _flush(self) -> None:
         while not self._blocking and self._available:
-            when, tie_breaker, src, msgs = heapq.heappop(self._available)
-            msg = msgs.popleft()
+            self._time, tie_breaker, src, msgs = heapq.heappop(self._available)
+            _, msg = msgs.popleft()
 
-            self._now = when
             self._callback(msg)
 
             if msgs:
                 if msgs[0] is not _SENTINEL:
                     heapq.heappush(
-                        self._available,
-                        (self._get_time(msgs[0]), tie_breaker, src, msgs),
+                        self._available, (msgs[0][0], tie_breaker, src, msgs),
                     )
             else:
-                self._blocking[src] = tie_breaker, src, msgs
+                self._blocking[src] = tie_breaker
 
     def close(self) -> None:
         for src in list(self._channels):
             self.unregister(src)
+
+
+class BucketMerger(Generic[_T, _HashableT, _SortableT]):
+    def __init__(
+        self,
+        sort_key: Callable[[_T], _SortableT],
+        bucket_key: Callable[[_T], _HashableT],
+        callback: Callable[[_T], Any],
+    ) -> None:
+        self._get_time = sort_key
+        self._get_src = bucket_key
+        self._merger: ManagedMerger[_T, _HashableT, _SortableT] = ManagedMerger(
+            callback
+        )
+
+    def register(self, src: _HashableT) -> None:
+        self._merger.register(src)
+
+    def unregister(self, src: _HashableT) -> None:
+        self._merger.unregister(src)
+
+    def put(self, msg: _T) -> None:
+        time = self._get_time(msg)
+        src = self._get_src(msg)
+        self._merger.put(msg, src, time)
+
+    def close(self) -> None:
+        self._merger.close()
+
+
+class TimeoutMerger(Generic[_T, _HashableT, _TimeT]):
+    """Merge sorted streams of messages
+
+    This class automatically handles the registering of senders joining the cluster and
+    the unregistering of senders leaving the clusters using a timeout heuristic; if one
+    sender falls behind the leading sender by more than a given duration, then the
+    silent sender is presumed to have left.
+
+    Convenient when senders leaving the cluster is a rare occurrence but probably a bad
+    fit otherwise.
+    """
+
+    def __init__(self, callback: Callable[[_T], Any], timeout: _TimeT) -> None:
+        self._merger: ManagedMerger[_T, _HashableT, _TimeT] = ManagedMerger(callback)
+        self._timeout: _TimeT = timeout
+        self._timeout_ends: Dict[_HashableT, _TimeT] = {}
+
+    def put(self, msg: _T, sender: _HashableT, time: _TimeT) -> None:
+        # disable protected-access because I want to try out using `_time` before
+        # making it part of the interface.
+        # pylint: disable=protected-access
+        timeout_end = time + self._timeout
+        if sender in self._timeout_ends and timeout_end < self._timeout_ends[sender]:
+            raise ValueError("Time must be non-decreasing")
+
+        self._flush(time)
+        self._touch(sender, timeout_end=timeout_end)
+        if self._merger._time is None or self._merger._time <= time:
+            self._merger.put(msg, sender, time)
+
+    def _touch(self, sender: _HashableT, timeout_end: _TimeT) -> None:
+        if sender not in self._timeout_ends:
+            self._merger.register(sender)
+        self._timeout_ends[sender] = timeout_end
+
+    def _flush(self, time: _TimeT) -> None:
+        # This has horrible asymptotic runtime but should be reasonably fast in
+        # practice for many cases.
+        while self._timeout_ends:
+            sender, timeout_end = min(
+                self._timeout_ends.items(), key=operator.itemgetter(0)
+            )
+            if time <= timeout_end:
+                break
+            # Unregistering may release detained messages so we make sure to update
+            # `timeout_ends` a.k.a. `senders` first.
+            del self._timeout_ends[sender]
+            self._merger.unregister(sender)
+
+    @property
+    def senders(self) -> FrozenSet[_HashableT]:
+        return frozenset(self._timeout_ends)
 
 
 class _Bucket:
@@ -153,7 +223,7 @@ class _Bucket:
             raise StopIteration
 
 
-class SimpleBucketMerger(Generic[T]):
+class SimpleBucketMerger(Generic[_T]):
     """A simpler and less flexible version
 
     Implemented as warm up, kept for comparison (for now).
@@ -161,17 +231,17 @@ class SimpleBucketMerger(Generic[T]):
 
     def __init__(
         self,
-        sort_key: Callable[[T], ComparableT],
-        bucket_key: Callable[[T], U],
-        bucket_keys: Iterable[U],
-        callback: Callable[[T], Any],
+        sort_key: Callable[[_T], _SupportsSort],
+        bucket_key: Callable[[_T], _HashableT],
+        bucket_keys: Iterable[_HashableT],
+        callback: Callable[[_T], Any],
     ) -> None:
         self._bucket_key = bucket_key
         self._callback = callback
         self._buckets = {k: _Bucket() for k in bucket_keys}
         self._sorted = iterutils.imerge(self._buckets.values(), sort_key)
 
-    def put(self, item: T) -> None:
+    def put(self, item: _T) -> None:
         self._buckets[self._bucket_key(item)].append(item)
         while all(self._buckets.values()):
             self._callback(next(self._sorted))

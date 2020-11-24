@@ -246,3 +246,25 @@ def test_result_is_sorted_by_fuzzing(eager_bucket_merge, num_src, max_event):
     actual = eager_bucket_merge(msgs, get_time, get_src, srcs)
     assert actual == sorted(actual, key=get_time)
     assert collections.Counter(actual) == collections.Counter(msgs)
+
+
+def test_timeout_merger_by_example():
+    actual_msgs = []
+    merger = streamutils.TimeoutMerger(actual_msgs.append, 10)
+
+    def put(msg):
+        actual_msgs.clear()
+        merger.put(msg, msg[0], int(msg[1:]))
+        return actual_msgs, merger.senders
+
+    assert put("a10") == (["a10"], {"a"})
+    assert put("b09") == ([], {"a", "b"})  # Dropped silently because new sender
+    assert put("b11") == ([], {"a", "b"})
+    assert put("c12") == ([], {"a", "b", "c"})
+    assert put("c21") == (["b11"], {"b", "c"})
+    assert put("b22") == (["c12", "c21"], {"b", "c"})  # a presumed disconnected
+
+    with pytest.raises(ValueError):
+        put("b21")  # Dropped loudly because old sender
+    assert actual_msgs == []
+    assert merger.senders == {"b", "c"}
