@@ -3,6 +3,7 @@ import itertools
 
 _LEFT = "L"
 _RIGHT = "R"
+assert _LEFT < _RIGHT
 
 
 def _subsets(items):
@@ -40,13 +41,13 @@ def _intersection(intervals):
 
 def _endpoints(intervals):
     for tie_breaker, (key, (left, right)) in enumerate(intervals):
-        yield left, tie_breaker, key, _LEFT
-        yield right, tie_breaker, key, _RIGHT
+        yield left, _LEFT, tie_breaker, key
+        yield right, _RIGHT, tie_breaker, key
 
 
 def _intervals(endpoints):
     active = {}
-    for when, _, key, side in endpoints:
+    for when, side, _, key in endpoints:
         if side is _LEFT:
             active[key] = when
         else:
@@ -55,13 +56,13 @@ def _intervals(endpoints):
 
 def _intersecting_subsets(endpoints):
     active = {}
-    for when, tie_breaker, key, side in endpoints:
+    for when, side, tie_breaker, key in endpoints:
         if side is _RIGHT:
             del active[key]
 
-        yield when, tie_breaker, frozenset([key]), side
+        yield when, side, tie_breaker, frozenset([key])
         for keys in _subsets(active):
-            yield when, tie_breaker, frozenset((key,) + keys), side
+            yield when, side, tie_breaker, frozenset((key,) + keys)
 
         if side is _LEFT:
             active[key] = when
@@ -80,12 +81,12 @@ def intersecting_subsets(intervals):
 
 def _intersecting_combinations(endpoints, k):
     active = {}
-    for when, tie_breaker, key, side in endpoints:
+    for when, side, tie_breaker, key in endpoints:
         if side is _RIGHT:
             del active[key]
 
         for keys in itertools.combinations(active, k - 1):
-            yield when, tie_breaker, frozenset((key,) + keys), side
+            yield when, side, tie_breaker, frozenset((key,) + keys)
 
         if side is _LEFT:
             active[key] = when
@@ -104,14 +105,14 @@ def intersecting_combinations(intervals, k):
 
 def _intersecting_products(factored_endpoints, num_factor):
     active = [set() for _ in range(num_factor)]
-    for when, tie_breaker, (factor_num, key), side in factored_endpoints:
+    for when, side, tie_breaker, (factor_num, key) in factored_endpoints:
         if side is _LEFT:
             active[factor_num].add(key)
 
         tmp = active[:]
         tmp[factor_num] = [key]
         for keys in itertools.product(*tmp):
-            yield when, tie_breaker, keys, side
+            yield when, side, tie_breaker, keys
 
         if side is _RIGHT:
             active[factor_num].remove(key)
