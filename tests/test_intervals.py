@@ -63,15 +63,21 @@ def test_intersecting_combinations_by_example(example):
     assert intervals.intersecting_combinations(*args) == expected
 
 
-# TODO: Define behavior in edge cases such as
-#  * when no factors are given or
-#  * at least one factor is zero length.
 @pytest.mark.parametrize(
     "example",
     [
-        ([{0: (1, 7)}, {1: (3, 9)}, {2: (0, 2), 3: (0, 4)}], {(0, 1, 3): (3, 4)}),
-        ([{0: (1, 7)}, {1: (3, 9)}], {(0, 1): (3, 7)}),
+        # Allow empty inputs because it is trivial to disallow them in a wrapper but
+        # hard to make them allowed
+        ([], {}),
+        ([{0: (1, 2)}, {}], {}),
+        # Include empty intervals because it is trivial to remove them in a wrapper but
+        # hard to add them
+        ([{0: (1, 1)}], {(0,): (1, 1)}),
+        ([{0: (1, 2)}, {1: (2, 3)}], {(0, 1): (2, 2)}),
+        ([{0: (1, 2)}, {1: (3, 4)}], {}),
         ([{0: (1, 7)}], {(0,): (1, 7)}),
+        ([{0: (1, 7)}, {1: (3, 9)}], {(0, 1): (3, 7)}),
+        ([{0: (1, 7)}, {1: (3, 9)}, {2: (0, 2), 3: (0, 4)}], {(0, 1, 3): (3, 4)}),
         # works not only with numbers
         (
             [{"a": ([1, 2], [3, 4])}, {"b": ([2, 3], [4, 5])}],
