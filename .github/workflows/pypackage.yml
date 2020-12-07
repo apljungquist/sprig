@@ -26,6 +26,7 @@ jobs:
       run: python --version
     - name: Install dependencies
       run: |
+        pip install pip==20.0.2
         pip install -c requirements.txt pip setuptools
         pip install -c requirements.txt tox
     - name: Run tests with tox
@@ -43,6 +44,7 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
+        pip install pip==20.0.2
         pip install -c requirements.txt pip setuptools
         pip install -c requirements.txt tox
     - name: Build sdist and wheel
