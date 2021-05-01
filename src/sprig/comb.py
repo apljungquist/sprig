@@ -178,3 +178,7 @@ class Combinations(Generic[T]):
 
         Combinations.max_n_cache[k][(lower, upper)] = n
         return n, lower
+
+    @staticmethod
+    def clear_cache():
+        Combinations.max_n_cache.clear()
