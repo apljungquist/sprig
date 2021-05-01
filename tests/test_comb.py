@@ -93,3 +93,31 @@ def test_iter_agrees_with_itertools(s, k):
     actual = comb.Combinations(s, k)
     expected = itertools.combinations(s, k)
     assert list(actual) == list(expected)
+
+
+@pytest.mark.parametrize("values", ["abc", "cba"])
+def test_interval_cache(values):
+    cache = comb.IntervalCache()
+
+    with pytest.raises(LookupError):
+        cache.get(0)
+
+    cache.set(0, 1, values[0])
+    assert cache.get(0) == values[0]
+    with pytest.raises(LookupError):
+        cache.get(1)
+
+    cache.set(1, 2, values[1])
+    assert cache.get(0) == values[0]
+    assert cache.get(1) == values[1]
+    with pytest.raises(LookupError):
+        cache.get(2)
+
+    cache.set(3, 4, values[2])
+    assert cache.get(0) == values[0]
+    assert cache.get(1) == values[1]
+    with pytest.raises(LookupError):
+        cache.get(2)
+    assert cache.get(3) == values[2]
+    with pytest.raises(LookupError):
+        cache.get(4)

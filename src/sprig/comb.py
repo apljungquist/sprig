@@ -1,17 +1,21 @@
 """
 A collection of utils for doing combinatorics.
 """
+import bisect
 import collections
 import functools
 import itertools
+import math
 import operator
 from typing import (
-    Iterable,
-    Tuple,
-    Union,
+    Dict,
     Generic,
-    TypeVar,
+    Iterable,
     Iterator,
+    List,
+    Tuple,
+    TypeVar,
+    Union,
     overload,
 )
 
@@ -28,6 +32,25 @@ def comb(n: int, k: int) -> int:
 
 
 T = TypeVar("T")
+
+
+class IntervalCache(Generic[T]):
+    def __init__(self):
+        self._data: List[Tuple[Tuple[float, float], T]] = []
+
+    def get(self, item: float) -> T:
+        i = bisect.bisect(self._data, ((item, math.inf),))
+        (_, lower), result = self._data[i]
+        if item < lower:
+            raise LookupError
+        return result
+
+    def set(self, lower: float, upper: float, value: T) -> None:
+        record = (upper, lower), value
+        i = bisect.bisect(self._data, record)
+        if i and self._data[i - 1] == record:
+            return
+        self._data.insert(i, record)
 
 
 class Combinations(Generic[T]):
@@ -147,8 +170,9 @@ class Combinations(Generic[T]):
             index -= nck
             yield n
 
-    # TODO: PyPy does not like `Dict[int, Dict[Tuple[int, int], int]`
-    max_n_cache = collections.defaultdict(dict)  # type: ignore
+    caches: Dict[int, IntervalCache[Tuple[int, int]]] = collections.defaultdict(
+        IntervalCache
+    )
 
     @staticmethod
     def max_n_choose_k_below_limit(
@@ -165,10 +189,10 @@ class Combinations(Generic[T]):
         >>> Combinations.max_n_choose_k_below_limit(5, 3, 5)
         (4, 4)
         """
-
-        for lower, upper in Combinations.max_n_cache[k]:
-            if lower <= limit < upper:
-                return Combinations.max_n_cache[k][(lower, upper)], lower
+        try:
+            return Combinations.caches[k].get(limit)
+        except LookupError:
+            pass
 
         lower = int(comb(n, k))
         if lower > limit:
@@ -176,9 +200,9 @@ class Combinations(Generic[T]):
 
         upper = int(comb(n + 1, k))
 
-        Combinations.max_n_cache[k][(lower, upper)] = n
+        Combinations.caches[k].set(lower, upper, (n, lower))
         return n, lower
 
     @staticmethod
     def clear_cache():
-        Combinations.max_n_cache.clear()
+        Combinations.caches.clear()
