@@ -3,7 +3,7 @@ pytest                  # test
 coverage                # cov-html, test
 codecov                 # cov-codecov
 sphinx                  # docs-html
-m2r                     # docs-html
+m2r2                     # docs-html
 sphinxcontrib-apidoc    # docs-html
 black                   # formatting
 pylint                  # linting

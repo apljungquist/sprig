@@ -11,7 +11,8 @@ U = TypeVar("U")
 
 
 def imerge(
-    iterables: Iterable[Iterable[T]], key: Callable[[T], Any] = lambda x: x,
+    iterables: Iterable[Iterable[T]],
+    key: Callable[[T], Any] = lambda x: x,
 ) -> Iterator[T]:
     """Merge individually sorted iterables to a single sorted iterator.
 

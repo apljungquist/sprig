@@ -82,7 +82,8 @@ class Combinations(Generic[T]):
         ...
 
     def __getitem__(
-        self, index: Union[int, slice],
+        self,
+        index: Union[int, slice],
     ) -> Union[Tuple[T, ...], Iterable[Tuple[T, ...]]]:
         """
         Get the index'th combination in lexicographical order.
@@ -99,10 +100,7 @@ class Combinations(Generic[T]):
 
         # If asked to return a slice, return a list of all indices included in slice
         if isinstance(index, slice):
-            return [
-                self[i]  # type: ignore
-                for i in range(*index.indices(self._len))
-            ]
+            return [self[i] for i in range(*index.indices(self._len))]  # type: ignore
 
         # Allow negative indexing from the end of the sequence
         if index < 0:
@@ -153,7 +151,11 @@ class Combinations(Generic[T]):
     max_n_cache = collections.defaultdict(dict)  # type: ignore
 
     @staticmethod
-    def max_n_choose_k_below_limit(n: int, k: int, limit: int,) -> Tuple[int, int]:
+    def max_n_choose_k_below_limit(
+        n: int,
+        k: int,
+        limit: int,
+    ) -> Tuple[int, int]:
         """
         Compute the largest n s.t. n choose k < limit.
         Return also the corresponding value of n choose k for optimization.

@@ -41,7 +41,7 @@ release = "0.0.12"
 extensions = [
     "sphinx.ext.autodoc",
     "sphinxcontrib.apidoc",
-    "m2r",
+    "m2r2",
 ]
 
 apidoc_module_dir = "../src"

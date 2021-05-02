@@ -36,7 +36,10 @@ def _rand_factors(seed, num_factor=None, num_interval=None, min_pitch=None):
 
 
 @pytest.mark.parametrize(
-    "example", [({0: (1, 7), 1: (3, 9)}, {(0,): (1, 7), (0, 1): (3, 7), (1,): (3, 9)}),]
+    "example",
+    [
+        ({0: (1, 7), 1: (3, 9)}, {(0,): (1, 7), (0, 1): (3, 7), (1,): (3, 9)}),
+    ],
 )
 def test_intersecting_subsets_by_example(example):
     args = example[:-1]

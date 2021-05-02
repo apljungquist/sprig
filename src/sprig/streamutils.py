@@ -60,7 +60,10 @@ class ManagedMerger(Generic[_T, _HashableT, _SortableT]):
     'abcdEfghi'
     """
 
-    def __init__(self, callback: Callable[[_T], Any],) -> None:
+    def __init__(
+        self,
+        callback: Callable[[_T], Any],
+    ) -> None:
         self._callback = callback
 
         self._channels: Dict[_HashableT, Deque[Tuple[_SortableT, _T]]] = {}
@@ -111,7 +114,8 @@ class ManagedMerger(Generic[_T, _HashableT, _SortableT]):
             if msgs:
                 if msgs[0] is not _SENTINEL:
                     heapq.heappush(
-                        self._available, (msgs[0][0], tie_breaker, src, msgs),
+                        self._available,
+                        (msgs[0][0], tie_breaker, src, msgs),
                     )
             else:
                 self._blocking[src] = tie_breaker
@@ -219,8 +223,8 @@ class _Bucket:
     def __next__(self):
         try:
             return self._deque.popleft()
-        except IndexError:
-            raise StopIteration
+        except IndexError as e:
+            raise StopIteration from e
 
 
 class SimpleBucketMerger(Generic[_T]):

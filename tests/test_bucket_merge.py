@@ -13,7 +13,10 @@ def _conjure_msg(label, random, timestamp):
 
 
 def _conjure_mminf(
-    get_one, time_between_arrival: float, num, random: Random,
+    get_one,
+    time_between_arrival: float,
+    num,
+    random: Random,
 ):
     now = 0
     for _ in itertools.islice(itertools.count(), num):

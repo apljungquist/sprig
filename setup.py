@@ -19,9 +19,14 @@ setuptools.setup(
     license="MIT",
     packages=setuptools.find_packages("src"),
     package_dir={"": "src"},
-    package_data={"sprig": ["py.typed"],},
+    package_data={
+        "sprig": ["py.typed"],
+    },
     zip_safe=False,
-    install_requires=["more_itertools", "typing_extensions",],
+    install_requires=[
+        "more_itertools",
+        "typing_extensions",
+    ],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3",

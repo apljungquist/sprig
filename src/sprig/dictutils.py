@@ -209,7 +209,10 @@ T = TypeVar("T")
 V = TypeVar("V", bound=Hashable)
 
 
-def group_by(iterable: Iterable[T], keyfunc: Callable[[T], V],) -> Dict[V, List[T]]:
+def group_by(
+    iterable: Iterable[T],
+    keyfunc: Callable[[T], V],
+) -> Dict[V, List[T]]:
     """Group items by key
 
     Similar to `itertools.groupby` except
