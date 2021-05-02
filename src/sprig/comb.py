@@ -53,6 +53,56 @@ class IntervalCache(Generic[T]):
         self._data.insert(i, record)
 
 
+class _CombinationsCache:
+    def __init__(self):
+        self._data: Dict[int, IntervalCache[Tuple[int, int]]] = collections.defaultdict(
+            IntervalCache
+        )
+
+    def max_n_choose_k_below_limit(
+        self,
+        n: int,
+        k: int,
+        limit: int,
+    ) -> Tuple[int, int]:
+        """
+        Compute the largest n s.t. n choose k < limit.
+        Return also the corresponding value of n choose k for optimization.
+
+        e.g. 5 choose 3 = 10 > 5 but 4 choose 3 = 4 < 5, thus
+
+        >>> _CombinationsCache().max_n_choose_k_below_limit(5, 3, 5)
+        (4, 4)
+        """
+        try:
+            return self._data[k].get(limit)
+        except LookupError:
+            pass
+
+        lower = int(comb(n, k))
+        if lower > limit:
+            n, lower = self.max_n_choose_k_below_limit(n - 1, k, limit)
+
+        upper = int(comb(n + 1, k))
+
+        self._data[k].set(lower, upper, (n, lower))
+        return n, lower
+
+    def clear(self):
+        self._data.clear()
+
+
+_default_cache = _CombinationsCache()
+
+
+def clear_cache():
+    global _default_cache
+    _default_cache.clear()
+
+
+max_n_choose_k_below_limit = _default_cache.max_n_choose_k_below_limit
+
+
 class Combinations(Generic[T]):
     """
     Create an object that represent a collection of combinations.
@@ -166,43 +216,8 @@ class Combinations(Generic[T]):
         n = self._n
 
         for k in range(self._k, 0, -1):
-            n, nck = Combinations.max_n_choose_k_below_limit(n, k, index)
+            n, nck = max_n_choose_k_below_limit(n, k, index)
             index -= nck
             yield n
 
-    caches: Dict[int, IntervalCache[Tuple[int, int]]] = collections.defaultdict(
-        IntervalCache
-    )
 
-    @staticmethod
-    def max_n_choose_k_below_limit(
-        n: int,
-        k: int,
-        limit: int,
-    ) -> Tuple[int, int]:
-        """
-        Compute the largest n s.t. n choose k < limit.
-        Return also the corresponding value of n choose k for optimization.
-
-        e.g. 5 choose 3 = 10 > 5 but 4 choose 3 = 4 < 5, thus
-
-        >>> Combinations.max_n_choose_k_below_limit(5, 3, 5)
-        (4, 4)
-        """
-        try:
-            return Combinations.caches[k].get(limit)
-        except LookupError:
-            pass
-
-        lower = int(comb(n, k))
-        if lower > limit:
-            n, lower = Combinations.max_n_choose_k_below_limit(n - 1, k, limit)
-
-        upper = int(comb(n + 1, k))
-
-        Combinations.caches[k].set(lower, upper, (n, lower))
-        return n, lower
-
-    @staticmethod
-    def clear_cache():
-        Combinations.caches.clear()
