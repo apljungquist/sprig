@@ -1,6 +1,8 @@
 """Utilities for working with intervals."""
 import itertools
 
+from sprig import features
+
 _LEFT = "L"
 _RIGHT = "R"
 
@@ -138,3 +140,13 @@ def intersecting_products(factors):
     input_endpoints = sorted(_endpoints(items))
     output_endpoints = _intersecting_products(input_endpoints, len(factors))
     return dict(_intervals(output_endpoints))
+
+
+if features.SPEEDUP_INTERVALS:
+    try:
+        from sprigs import sprigs
+    except ImportError:
+        if features.REQUIRE_SPEEDUPS:
+            raise
+    else:
+        intersecting_products = sprigs.intersecting_products

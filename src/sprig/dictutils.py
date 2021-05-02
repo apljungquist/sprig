@@ -5,6 +5,8 @@ from collections import defaultdict
 from typing import Any, Dict, TypeVar, Callable, Iterable, Hashable, List
 
 # 'Recursive types not fully supported yet, nested types replaced with "Any"'
+from sprig import features
+
 TreeT = Dict[str, Any]
 
 DEFAULT_SEP = "/"
@@ -238,3 +240,13 @@ def invert(mapping: Dict[T, V]) -> Dict[V, T]:
     if len(result) != len(mapping):
         raise ValueError("Duplicate values in mapping")
     return result
+
+
+if features.SPEEDUP_DICTUTILS:
+    try:
+        from sprigs import sprigs
+    except ImportError:
+        if features.REQUIRE_SPEEDUPS:
+            raise
+    else:
+        invert = sprigs.invert

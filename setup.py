@@ -27,6 +27,7 @@ setuptools.setup(
         "more_itertools",
         "typing_extensions",
     ],
+    extras_require={"speedups": ["sprigs"]},
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Programming Language :: Python :: 3",

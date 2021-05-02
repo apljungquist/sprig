@@ -19,6 +19,8 @@ from typing import (
     overload,
 )
 
+from sprig import features
+
 
 def comb(n: int, k: int) -> int:
     """Compute binomial coefficient n choose k"""
@@ -242,3 +244,12 @@ class Combinations(Generic[T]):
             yield n
 
 
+if features.SPEEDUP_COMB:
+    try:
+        from sprigs import sprigs
+    except ImportError:
+        if features.REQUIRE_SPEEDUPS:
+            raise
+    else:
+        max_n_choose_k_below_limit = sprigs.max_n_choose_k_below_limit
+        clear_cache = sprigs.clear_cache
