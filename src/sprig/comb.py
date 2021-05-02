@@ -92,7 +92,28 @@ class _CombinationsCache:
         self._data.clear()
 
 
-_default_cache = _CombinationsCache()
+class _CombinationsCache2:
+    def __init__(self):
+        self._nck_caches = collections.defaultdict(list)
+
+    @functools.lru_cache(maxsize=None)
+    def _ncks(self, k, max_n):
+        cache = self._nck_caches[k]
+        cache.extend(math.comb(n, k) for n in range(len(cache), max_n + 1))
+        return cache
+
+    def max_n_choose_k_below_limit(self, n_max, k, limit):
+        ncks = self._ncks(k, n_max)
+        # The first k entries are 0 and can be omitted from the search
+        n = bisect.bisect(ncks, limit, lo=k, hi=n_max) - 1
+        return n, ncks[n]
+
+    def clear(self):
+        self._ncks.cache_clear()
+        self._nck_caches.clear()
+
+
+_default_cache = _CombinationsCache2()
 
 
 def clear_cache():
