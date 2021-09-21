@@ -1,11 +1,41 @@
 """Utilities for working with intervals."""
 import itertools
+from typing import (
+    Any,
+    Collection,
+    Dict,
+    FrozenSet,
+    Hashable,
+    Iterable,
+    Iterator,
+    List,
+    Mapping,
+    Sequence,
+    Set,
+    Tuple,
+    TypeVar,
+)
+
+from typing_extensions import Literal, Protocol
+
+End = Literal["L", "R"]
+
+
+class SupportsLessThan(Protocol):
+    # pylint: disable=too-few-public-methods
+    def __lt__(self, __other: Any) -> bool:
+        ...
+
+
+SupportsLessThanT = TypeVar("SupportsLessThanT", bound=SupportsLessThan)
+HashableT = TypeVar("HashableT", bound=Hashable)
+T = TypeVar("T")
 
 _LEFT = "L"
 _RIGHT = "R"
 
 
-def _subsets(items):
+def _subsets(items: Collection[T]) -> Iterator[Tuple[T, ...]]:
     """Iterate over all possible subsets of `items`.
 
     The order in which subsets appear is not guaranteed.
@@ -23,7 +53,9 @@ def _subsets(items):
     )
 
 
-def _intersection(intervals):
+def _intersection(
+    intervals: Iterable[Tuple[SupportsLessThanT, SupportsLessThanT]]
+) -> Tuple[SupportsLessThanT, SupportsLessThanT]:
     """Return the biggest interval that is a subset of all given intervals
 
     >>> _intersection([(10,60), (40, 90)])
@@ -38,13 +70,17 @@ def _intersection(intervals):
     return left, right
 
 
-def _endpoints(intervals):
+def _endpoints(
+    intervals: Iterable[Tuple[HashableT, Tuple[SupportsLessThanT, SupportsLessThanT]]]
+) -> Iterator[Tuple[SupportsLessThanT, int, HashableT, End]]:
     for tie_breaker, (key, (left, right)) in enumerate(intervals):
-        yield left, tie_breaker, key, _LEFT
-        yield right, tie_breaker, key, _RIGHT
+        yield left, tie_breaker, key, "L"
+        yield right, tie_breaker, key, "R"
 
 
-def _intervals(endpoints):
+def _intervals(
+    endpoints: Iterable[Tuple[SupportsLessThanT, int, HashableT, End]]
+) -> Iterator[Tuple[HashableT, Tuple[SupportsLessThanT, SupportsLessThanT]]]:
     active = {}
     for when, _, key, side in endpoints:
         if side is _LEFT:
@@ -53,8 +89,10 @@ def _intervals(endpoints):
             yield key, (active.pop(key), when)
 
 
-def _intersecting_subsets(endpoints):
-    active = {}
+def _intersecting_subsets(
+    endpoints: Iterable[Tuple[SupportsLessThanT, int, HashableT, End]]
+) -> Iterator[Tuple[SupportsLessThanT, int, FrozenSet[HashableT], End]]:
+    active: Dict[HashableT, SupportsLessThanT] = {}
     for when, tie_breaker, key, side in endpoints:
         if side is _RIGHT:
             del active[key]
@@ -67,7 +105,9 @@ def _intersecting_subsets(endpoints):
             active[key] = when
 
 
-def intersecting_subsets(intervals):
+def intersecting_subsets(
+    intervals: Mapping[HashableT, Tuple[SupportsLessThanT, SupportsLessThanT]]
+) -> Dict[FrozenSet[HashableT], Tuple[SupportsLessThanT, SupportsLessThanT]]:
     """All intervals formed by reducing subsets with intersection
 
     In no particular order.
@@ -78,8 +118,10 @@ def intersecting_subsets(intervals):
     return dict(_intervals(output_endpoints))
 
 
-def _intersecting_combinations(endpoints, k):
-    active = {}
+def _intersecting_combinations(
+    endpoints: Iterable[Tuple[SupportsLessThanT, int, HashableT, End]], k: int
+) -> Iterator[Tuple[SupportsLessThanT, int, FrozenSet[HashableT], End]]:
+    active: Dict[HashableT, SupportsLessThanT] = {}
     for when, tie_breaker, key, side in endpoints:
         if side is _RIGHT:
             del active[key]
@@ -91,7 +133,9 @@ def _intersecting_combinations(endpoints, k):
             active[key] = when
 
 
-def intersecting_combinations(intervals, k):
+def intersecting_combinations(
+    intervals: Mapping[HashableT, Tuple[SupportsLessThanT, SupportsLessThanT]], k: int
+) -> Dict[FrozenSet[HashableT], Tuple[SupportsLessThanT, SupportsLessThanT]]:
     """All intervals formed by reducing k-combinations with intersection
 
     In no particular order.
@@ -102,14 +146,19 @@ def intersecting_combinations(intervals, k):
     return dict(_intervals(output_endpoints))
 
 
-def _intersecting_products(factored_endpoints, num_factor):
-    active = [set() for _ in range(num_factor)]
+def _intersecting_products(
+    factored_endpoints: Iterable[
+        Tuple[SupportsLessThanT, int, Tuple[int, HashableT], End]
+    ],
+    num_factor: int,
+) -> Iterator[Tuple[SupportsLessThanT, int, Tuple[HashableT, ...], End]]:
+    active: List[Set[HashableT]] = [set() for _ in range(num_factor)]
     for when, tie_breaker, (factor_num, key), side in factored_endpoints:
         if side is _LEFT:
             active[factor_num].add(key)
 
         tmp = active[:]
-        tmp[factor_num] = [key]
+        tmp[factor_num] = {key}
         for keys in itertools.product(*tmp):
             yield when, tie_breaker, keys, side
 
@@ -117,7 +166,9 @@ def _intersecting_products(factored_endpoints, num_factor):
             active[factor_num].remove(key)
 
 
-def intersecting_products(factors):
+def intersecting_products(
+    factors: Sequence[Mapping[HashableT, Tuple[SupportsLessThanT, SupportsLessThanT]]]
+) -> Mapping[Sequence[HashableT], Tuple[SupportsLessThanT, SupportsLessThanT]]:
     """All intervals formed by reducing products with intersection.
 
     In other words every interval that can be formed by intersecting exactly one
