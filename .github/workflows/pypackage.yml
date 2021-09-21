@@ -31,7 +31,7 @@ jobs:
         pip install -c requirements.txt tox
     - name: Run tests with tox
       env:
-        TOXENV: "py-stable,py-cov,cov-codecov${{ matrix.extratoxenv }}"
+        TOXENV: "py-stable,py-cov${{ matrix.extratoxenv }}"
       run: tox
   deploy:
     needs: test
