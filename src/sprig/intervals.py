@@ -189,3 +189,27 @@ def intersecting_products(
     input_endpoints = sorted(_endpoints(items))
     output_endpoints = _intersecting_products(input_endpoints, len(factors))
     return dict(_intervals(output_endpoints))
+
+
+def auto_intersections(
+    intervals: Mapping[HashableT, Tuple[SupportsLessThanT, SupportsLessThanT]]
+) -> Dict[FrozenSet[HashableT], Tuple[SupportsLessThanT, SupportsLessThanT]]:
+    """All intervals formed by intersecting two of the given intervals
+
+    >>> auto_intersections({0:(0,3), 1:(5,6), 2:(2,4)})
+    {frozenset({0, 2}): (2, 3)}
+    """
+    return intersecting_combinations(intervals, 2)
+
+
+def without_degenerate(
+    intervals: Mapping[HashableT, Tuple[SupportsLessThanT, SupportsLessThanT]],
+) -> Dict[HashableT, Tuple[SupportsLessThanT, SupportsLessThanT]]:
+    """Return only proper intervals
+
+    >>> without_degenerate({0:(1,1), 1:(2,3)})
+    {1: (2, 3)}
+    """
+    return {
+        key: (left, right) for key, (left, right) in intervals.items() if left < right
+    }
