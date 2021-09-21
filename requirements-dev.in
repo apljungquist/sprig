@@ -1,5 +1,6 @@
 # A summary of all packages needed to manage the project, excluding packages
 # that are not used directly.
+importlib-metadata < 2
 pip-tools < 5.4
 tox
 virtualenv < 20.0.24
