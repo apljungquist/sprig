@@ -20,6 +20,12 @@
 none:
 	@echo No target specified
 
+.PHONY: fix_format
+
+fix_format:
+	black src/ setup.py tests/
+	isort src/ setup.py tests/
+
 
 # Nouns
 # =====

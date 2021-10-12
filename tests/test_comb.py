@@ -1,9 +1,9 @@
 import functools
 import itertools
 
-from sprig import comb
-
 import pytest
+
+from sprig import comb
 
 parameters = [
     ([], 0),  # 0-combinations, empty collection

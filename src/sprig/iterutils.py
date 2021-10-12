@@ -2,8 +2,9 @@
 Some utility functions for working with iterators.
 """
 import heapq
-from typing import Any, Callable, Iterable, Iterator, List, Tuple, TypeVar, Optional
 import itertools
+from typing import Any, Callable, Iterable, Iterator, List, Optional, Tuple, TypeVar
+
 import more_itertools
 
 T = TypeVar("T")

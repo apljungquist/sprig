@@ -2,7 +2,7 @@
 A collection of convenient methods when working with dicts
 """
 from collections import defaultdict
-from typing import Any, Dict, TypeVar, Callable, Iterable, Hashable, List
+from typing import Any, Callable, Dict, Hashable, Iterable, List, TypeVar
 
 # 'Recursive types not fully supported yet, nested types replaced with "Any"'
 TreeT = Dict[str, Any]

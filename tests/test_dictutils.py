@@ -1,6 +1,6 @@
-from sprig import dictutils
-
 import pytest
+
+from sprig import dictutils
 
 deflated_examples = [
     {"a/i": 11, "a/j": 13, "b/i/x": "17"},  # Arbitrary tree
