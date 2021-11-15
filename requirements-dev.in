@@ -9,5 +9,5 @@ virtualenv < 20.0.24
 # file. However
 # * I cannot seem to find a good reference for why this would be the case, and
 # * I have experienced builds breaking because new versions were released.
-pip < 20.3
+pip < 21.2
 setuptools
